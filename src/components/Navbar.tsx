@@ -7,6 +7,7 @@ import SignInButton from './Signinbutton'
 
 import React from 'react'
 import UserAccountNav from './UserAccountNav'
+import { ThemeToggler } from './ThemeToggle'
 
 type Props = {}
 
@@ -25,7 +26,11 @@ const Navbar = async( props: Props) => {
           </p>
         </Link>
 
+        {/* <ThemeToggler /> */}
+
         <div className="flex items-center">
+
+        <ThemeToggler className=' mr-4' />
           
           {session?.user ? (
             <UserAccountNav user={session.user} />
