@@ -13,7 +13,7 @@ export default async function Home() {
 
   const session = await getServerSession();
   if (session?.user) {
-     return redirect("/dashboard");
+     return redirect("/dashboard");        //this is protecting, like if the user is logged in so can't go to "/"
   }
 
   return (

@@ -18,7 +18,7 @@ const DashboardPage = async(props: Props) => {
 
     const session = await getAuthSession();
     if(!session?.user) {
-        redirect('/')
+        redirect('/')             //protecting the dashboard page , if the user is not logged in so can't go to dashboard
     }
 
   return (

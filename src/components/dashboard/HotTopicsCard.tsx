@@ -9,6 +9,8 @@ import {
 // import WordCloud from "../WordCloud";
 import { prisma } from "@/lib/db";
 
+import WordCloud from "../WordCloud";
+
 type Props = {};
 
 const HotTopicsCard = async (props: Props) => {
@@ -32,7 +34,7 @@ const HotTopicsCard = async (props: Props) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="pl-2">
-          {/* <WordCloud formattedTopics={formattedTopics} /> */}
+          <WordCloud  />
         </CardContent>
       </Card>
     );
