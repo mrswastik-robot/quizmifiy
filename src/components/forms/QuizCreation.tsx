@@ -23,7 +23,8 @@ import { useForm } from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 
 import {useMutation} from '@tanstack/react-query'  
-
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 import { BookOpen, CopyCheck } from 'lucide-react';
 
@@ -32,6 +33,22 @@ type Props = {}
 type Input = z.infer<typeof quizFormSchema>
 
 const QuizCreation = (props: Props) => {
+
+    const router = useRouter();
+
+
+    const {mutate: getQuestions , isLoading}  = useMutation({                                             //2:18
+        mutationFn: async ({topic, amount, type}: Input) => {
+            const response = await axios.post('/api/game', {
+                amount,
+                topic,
+                type
+            })
+
+            return response.data;
+        }
+    })
+
 
     const form = useForm<Input>({
         resolver: zodResolver(quizFormSchema),
@@ -43,7 +60,21 @@ const QuizCreation = (props: Props) => {
     })
 
     function onSubmit(input: Input) {
-        alert(JSON.stringify(input ,null ,2))           //isse mast json format me print ho kr aa rha object with all inputs in the middle of the screen
+        // alert(JSON.stringify(input ,null ,2))           //isse mast json format me print ho kr aa rha object with all inputs in the middle of the screen
+
+        getQuestions({
+            topic: input.topic,
+            amount: input.amount,
+            type: input.type
+        },{
+            onSuccess: ({gameId}) => {
+                if(form.getValues("type") == "open_ended") {
+                    router.push(`/play/open-ended/${gameId}`)
+                }else{
+                    router.push(`/play/mcq/${gameId}`)
+                }
+            }
+        })
     }
 
     form.watch();
@@ -138,7 +169,7 @@ const QuizCreation = (props: Props) => {
                         </div>
 
 
-                        <Button type="submit">Submit</Button>
+                        <Button disabled={isLoading} type="submit">Submit</Button>
                     </form>
                 </Form>
 
