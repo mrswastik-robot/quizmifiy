@@ -1,6 +1,7 @@
 import { getAuthSession } from '@/lib/next-auth'
 import { redirect } from 'next/navigation'
 import {prisma} from '@/lib/db'
+import MCQ from '@/components/MCQ'
 
 type Props = {
     params:{
@@ -16,7 +17,7 @@ const MCQPage = async({params: {gameId}} : Props) => {
     }
 
     const game = await prisma.game.findUnique({               //2:31  , we are getting the game here but how to get the questions array stored in that game
-        where: {                                              //for that we will use 'include' in order to get the questions array 
+        where: {                                              //for that we will use 'include' in order to get the questions array , a game will have an array of questions and a 'Question' is a table in itself and there is a 1-to-many relationship between 'Game' and 'Question' ,
             id: gameId
         }, 
         include: {
@@ -36,7 +37,8 @@ const MCQPage = async({params: {gameId}} : Props) => {
     }
 
   return (
-    <div><pre>{JSON.stringify(game, null, 2)}</pre></div>
+    // <div><pre>{JSON.stringify(game, null, 2)}</pre></div>            
+    <div><MCQ game={game}/></div>
   )
 }
 
