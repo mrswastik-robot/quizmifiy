@@ -3,11 +3,17 @@
 import { Game, Question } from '@prisma/client'
 import { Timer } from 'lucide-react'
 import { ChevronRight } from 'lucide-react'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Card , CardHeader ,CardTitle, CardDescription, CardContent } from './ui/card'
 import { Button } from './ui/button'
-import { useMemo, useState } from 'react'
+import { Loader2 } from 'lucide-react'
+import { useMemo, useState , useEffect } from 'react'
 import MCQCounter from './MCQCounter'
+import { useMutation } from '@tanstack/react-query'
+import { z } from 'zod'
+import { checkAnswerSchema } from '@/schemas/form/quiz'
+import axios from 'axios'
+import { useToast } from './ui/use-toast'
 
 type Props = {
     game: Game & {questions: Pick<Question, "id" | "options" | "question">[]}           //2:35:25   // in the [gameId]page , we were getting the questions using the 'include' but here using the 'game' sent from the [gameId]page , we are not getting the questions
@@ -19,9 +25,64 @@ const MCQ = ({game}: Props) => {
     const [questionIndex, setQuestionIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState<number>(0);       //all the options bg are black , we need to know which option has been selected inorder to differentiate it from the rest , just like we did in mcq and open_ended button in the quiz form , changing the bg on the button which is clicked
 
+    const [correctAnswers , setCorrectAnswers] = useState<number>(0);
+    const [wrongAnswers , setWrongAnswers] = useState<number>(0);
+    const [hasEnded , setHasEnded] = useState<boolean>(false);
+
+    const {toast} = useToast();
+
     const currentQuestion = useMemo(() => {
         return game.questions[questionIndex];
     }, [questionIndex, game.questions]);
+
+
+    const {mutate: checkAnswer , isLoading: isChecking} = useMutation({          //similarly done in quizCreationForm.tsx
+        mutationFn: async () => {                                                //2:55:00
+            const payload: z.infer<typeof checkAnswerSchema> = {
+                questionId: currentQuestion.id,
+                userAnswer: options[selectedOption],
+            }
+
+            const response = await axios.post("/api/checkAnswer" , payload);
+            return response.data;
+        }
+    })
+
+
+    const handleNext = useCallback(() => {
+        if(isChecking) return;         
+        checkAnswer(undefined , {
+            onSuccess: ({isCorrect}) => {                             //isCorrect is coming from the checkAnswer api...
+                if(isCorrect) {
+
+                    toast({
+                        title: "Correct!",
+                        description: "You got it right",
+                        variant: "success"
+                    })
+                    setCorrectAnswers((prev) => prev + 1);
+
+                } else {
+                    toast({
+                        title: "Wrong!",
+                        description: "You got it wrong",
+                        variant: "destructive"
+                    })
+                    setWrongAnswers((prev) => prev + 1);
+                }
+
+                if(questionIndex === game.questions.length - 1) {       //agar last question hai to end the game
+                    setHasEnded(true);
+                    return;
+                }
+
+                //ab jab select kr liye ho to ab agle question pr bhi to jana hoga
+                setQuestionIndex((prev) => prev + 1);
+            }
+        });
+    }, [checkAnswer , toast, isChecking, questionIndex, game.questions.length])
+
+
 
     const options = useMemo(() => {           //getting the options of currentQuestions 2:42
         if(!currentQuestion) return[];
@@ -29,6 +90,33 @@ const MCQ = ({game}: Props) => {
 
         return JSON.parse(currentQuestion.options as string) as string[];
     },[currentQuestion]);
+
+
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+          const key = event.key;
+    
+          if (key === "1") {
+            setSelectedOption(0);
+          } else if (key === "2") {
+            setSelectedOption(1);
+          } else if (key === "3") {
+            setSelectedOption(2);
+          } else if (key === "4") {
+            setSelectedOption(3);
+          } else if (key === "Enter") {
+            handleNext();
+          }
+        };
+    
+        document.addEventListener("keydown", handleKeyDown);
+    
+        return () => {
+          document.removeEventListener("keydown", handleKeyDown);
+        };
+      }, [handleNext]);
+
+
 
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 md:w-[80vw] max-w-4xl w-[90vw] top-1/2 left-1/2">
@@ -47,7 +135,7 @@ const MCQ = ({game}: Props) => {
                 </div>
             </div>
             
-            <MCQCounter correct_answers={3} wrong_answers={4}/>
+            <MCQCounter correct_answers={correctAnswers} wrong_answers={wrongAnswers}/>
         </div>
 
         <Card className="w-full mt-4">
@@ -88,12 +176,12 @@ const MCQ = ({game}: Props) => {
           variant="default"
           className="mt-2"
           size="lg"
-        //   disabled={isChecking || hasEnded}
-        //   onClick={() => {
-        //     handleNext();
-        //   }}
+          disabled={isChecking}
+          onClick={() => {
+            handleNext();
+          }}
         >
-          {/* {isChecking && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} */}
+          {isChecking && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           Next <ChevronRight className="w-4 h-4 ml-2" />  
         </Button>
       </div>
