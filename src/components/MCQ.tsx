@@ -7,6 +7,7 @@ import React from 'react'
 import { Card , CardHeader ,CardTitle, CardDescription, CardContent } from './ui/card'
 import { Button } from './ui/button'
 import { useMemo, useState } from 'react'
+import MCQCounter from './MCQCounter'
 
 type Props = {
     game: Game & {questions: Pick<Question, "id" | "options" | "question">[]}           //2:35:25   // in the [gameId]page , we were getting the questions using the 'include' but here using the 'game' sent from the [gameId]page , we are not getting the questions
@@ -33,7 +34,7 @@ const MCQ = ({game}: Props) => {
     <div className="absolute -translate-x-1/2 -translate-y-1/2 md:w-[80vw] max-w-4xl w-[90vw] top-1/2 left-1/2">
 
         <div className=' flex flex-row justify-between'>
-            {/* <div className=' flex flex-col'> */}
+            <div className=' flex flex-col'>
 
                 <p>
                     <span className=' text-slate-400 mr-2'>Topic</span>
@@ -44,10 +45,9 @@ const MCQ = ({game}: Props) => {
                     <Timer className=' mr-2'/>
                     <span>11:11</span>
                 </div>
-
-                {/* MCQCounter */}
-
-            {/* </div> */}
+            </div>
+            
+            <MCQCounter correct_answers={3} wrong_answers={4}/>
         </div>
 
         <Card className="w-full mt-4">
