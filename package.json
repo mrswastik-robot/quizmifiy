@@ -48,6 +48,7 @@
     "zod": "^3.21.4"
   },
   "devDependencies": {
+    "@types/string-similarity": "^4.0.0",
     "prisma": "^5.1.0"
   }
 }
