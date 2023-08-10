@@ -3,10 +3,14 @@
 import { Game, Question } from '@prisma/client'
 import { Timer } from 'lucide-react'
 import { ChevronRight } from 'lucide-react'
-import React, { useCallback } from 'react'
+import React, { use, useCallback } from 'react'
+import Link from 'next/link'
 import { Card , CardHeader ,CardTitle, CardDescription, CardContent } from './ui/card'
+import { cn } from '@/lib/utils'
 import { Button } from './ui/button'
+import { buttonVariants } from './ui/button'
 import { Loader2 } from 'lucide-react'
+import { BarChart } from 'lucide-react'
 import { useMemo, useState , useEffect } from 'react'
 import MCQCounter from './MCQCounter'
 import { useMutation } from '@tanstack/react-query'
@@ -14,6 +18,9 @@ import { z } from 'zod'
 import { checkAnswerSchema } from '@/schemas/form/quiz'
 import axios from 'axios'
 import { useToast } from './ui/use-toast'
+
+import {differenceInSeconds} from 'date-fns';
+import { formatTimeDelta } from '@/lib/utils'
 
 type Props = {
     game: Game & {questions: Pick<Question, "id" | "options" | "question">[]}           //2:35:25   // in the [gameId]page , we were getting the questions using the 'include' but here using the 'game' sent from the [gameId]page , we are not getting the questions
@@ -29,11 +36,30 @@ const MCQ = ({game}: Props) => {
     const [wrongAnswers , setWrongAnswers] = useState<number>(0);
     const [hasEnded , setHasEnded] = useState<boolean>(false);
 
+    //for timecounter to update every second
+    const [now , setNow] = useState<Date>(new Date());
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if(!hasEnded)
+            {
+                setNow(new Date());
+            }
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [hasEnded]);
+
     const {toast} = useToast();
 
     const currentQuestion = useMemo(() => {
         return game.questions[questionIndex];
     }, [questionIndex, game.questions]);
+
+    const options = useMemo(() => {           //getting the options of currentQuestions 2:42
+        if(!currentQuestion) return[];
+        if(!currentQuestion.options) return[];
+
+        return JSON.parse(currentQuestion.options as string) as string[];
+    },[currentQuestion]);
 
 
     const {mutate: checkAnswer , isLoading: isChecking} = useMutation({          //similarly done in quizCreationForm.tsx
@@ -50,7 +76,8 @@ const MCQ = ({game}: Props) => {
 
 
     const handleNext = useCallback(() => {
-        if(isChecking) return;         
+        if(isChecking) return;  
+
         checkAnswer(undefined , {
             onSuccess: ({isCorrect}) => {                             //isCorrect is coming from the checkAnswer api...
                 if(isCorrect) {
@@ -80,18 +107,10 @@ const MCQ = ({game}: Props) => {
                 setQuestionIndex((prev) => prev + 1);
             }
         });
-    }, [checkAnswer , toast, isChecking, questionIndex, game.questions.length])
+    }, [checkAnswer , toast, isChecking, questionIndex, game.questions.length]);
 
 
-
-    const options = useMemo(() => {           //getting the options of currentQuestions 2:42
-        if(!currentQuestion) return[];
-        if(!currentQuestion.options) return[];
-
-        return JSON.parse(currentQuestion.options as string) as string[];
-    },[currentQuestion]);
-
-
+    //keyboard keys for selecting the options
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
           const key = event.key;
@@ -117,6 +136,25 @@ const MCQ = ({game}: Props) => {
       }, [handleNext]);
 
 
+      if (hasEnded) {
+        return (
+          <div className="absolute flex flex-col justify-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+            <div className="px-4 py-2 mt-2 font-semibold text-white bg-green-500 rounded-md whitespace-nowrap">
+              You Completed in{""}
+              {formatTimeDelta(differenceInSeconds(now, game.timeStarted))}
+            </div>
+            <Link
+              href={`/statistics/${game.id}`}
+              className={cn(buttonVariants({ size: "lg" }), "mt-2")}
+            >
+              View Statistics
+              <BarChart className="w-4 h-4 ml-2" />
+            </Link>
+          </div>
+        );
+      }
+
+
 
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 md:w-[80vw] max-w-4xl w-[90vw] top-1/2 left-1/2">
@@ -131,7 +169,7 @@ const MCQ = ({game}: Props) => {
 
                 <div className=' flex self-start mt-3 text-slate-400'>
                     <Timer className=' mr-2'/>
-                    <span>11:11</span>
+                    {formatTimeDelta(differenceInSeconds(now, game.timeStarted))}
                 </div>
             </div>
             
