@@ -39,6 +39,8 @@ const OpenEnded = ({game}: Props) => {
 
     // const [correctAnswers , setCorrectAnswers] = useState<number>(0);
     // const [wrongAnswers , setWrongAnswers] = useState<number>(0);
+    const [blankAnswer ,setBlankAnswer] = useState<string>('');            //setBlankAnswer is setting the answer in the child component BlankAnswerInput.tsx
+
     const [hasEnded , setHasEnded] = useState<boolean>(false);
 
     const {toast} = useToast();
@@ -62,10 +64,21 @@ const OpenEnded = ({game}: Props) => {
   }, [questionIndex, game.questions]);
 
   const {mutate: checkAnswer , isLoading: isChecking} = useMutation({          //similarly done in quizCreationForm.tsx
+
     mutationFn: async () => {                                                //2:55:00
+
+      let filledAnswer = blankAnswer;
+      document.querySelectorAll('#user-blank-input').forEach(input => {      //3:40 //we are getting the blankAnswer from the child compo BlankAnswerInput.tsx
+      filledAnswer = filledAnswer.replace("_____" , input.value)             //and then we are replacing the 5 blanks with the user input and then sending it to the backend api (checkAnswer.ts) for the similarity in strings , 
+
+      //resetting the input to blank
+      input.value = '';
+    })
+
+
         const payload: z.infer<typeof checkAnswerSchema> = {
             questionId: currentQuestion.id,
-            userAnswer: '',
+            userAnswer: filledAnswer,               //3:42:00
         }
 
         const response = await axios.post("/api/checkAnswer" , payload);
@@ -93,7 +106,7 @@ const handleNext = useCallback(() => {
           setQuestionIndex((prev) => prev + 1);
       }
   });
-}, [checkAnswer , toast, isChecking, questionIndex, game.questions.length]);
+}, [checkAnswer , toast, isChecking, questionIndex, game.questions.length ]);
 
 
 
@@ -114,6 +127,26 @@ useEffect(() => {
   };
 }, [handleNext]);
 
+
+
+//if the game has ended then we need to show stastics page
+if (hasEnded) {
+  return (
+    <div className="absolute flex flex-col justify-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
+      <div className="px-4 py-2 mt-2 font-semibold text-white bg-green-500 rounded-md whitespace-nowrap">
+        You Completed in{""}
+        {formatTimeDelta(differenceInSeconds(now, game.timeStarted))}
+      </div>
+      <Link
+        href={`/statistics/${game.id}`}
+        className={cn(buttonVariants({ size: "lg" }), "mt-2")}
+      >
+        View Statistics
+        <BarChart className="w-4 h-4 ml-2" />
+      </Link>
+    </div>
+  );
+}
 
 
 
@@ -156,7 +189,7 @@ useEffect(() => {
       <div className="flex flex-col items-center justify-center w-full mt-4">
         {/* //deleted the options here when copying from MCQ.tsx */}
 
-        <BlankAnswerInput answer={currentQuestion.answer}/>
+        <BlankAnswerInput answer={currentQuestion.answer} setBlankAnswer={setBlankAnswer} />
 
         <Button
           variant="default"

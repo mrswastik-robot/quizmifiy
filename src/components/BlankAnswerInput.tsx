@@ -1,14 +1,16 @@
 import React from 'react';
 import { useMemo } from 'react';
 import keyword_extractor from 'keyword-extractor';
+import { set } from 'date-fns';
 
 type Props = {
     answer: string;
+    setBlankAnswer: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const BLANKS = '_____';
 
-const BlankAnswerInput = ({answer}: Props) => {
+const BlankAnswerInput = ({answer , setBlankAnswer}: Props) => {
 
     //might be quite expensive so we don't want to recalculate the keyword of a particular question everytime the component is rendered , so we will use useMemo 
     //useMemo will only re-render/recalculate the keyword when the answer changes 
@@ -30,9 +32,11 @@ const BlankAnswerInput = ({answer}: Props) => {
         const answerWithBlanks = keywords.reduce((acc, keyword) => {
           return acc.replaceAll(keyword, BLANKS);
         }, answer);
-        // setBlankAnswer(answerWithBlanks);
+
+        setBlankAnswer(answerWithBlanks);                     //3:38  , this setBlankAnswer is setting the 'blankAnswer' state which is in the parent component , which is OpenEnded.tsx
+
         return answerWithBlanks;
-      }, [answer, keywords,]);
+      }, [answer, keywords,setBlankAnswer]);
 
 
   return (
