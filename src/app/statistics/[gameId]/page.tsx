@@ -6,6 +6,10 @@ import { redirect } from 'next/navigation'
 
 import {prisma} from '@/lib/db'
 
+import ResultsCard from '@/components/statistics/ResultCard'
+import AccuracyCard from '@/components/statistics/AccuracyCard'
+import TimeTakenCard from '@/components/statistics/TimeTakenCard'
+
 import { LucideLayoutDashboard } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
 
@@ -35,7 +39,7 @@ const StatisticsPage = async({params: {gameId}}: Props) => {
     <>
       <div className="p-8 mx-auto max-w-7xl">
         <div className="flex items-center justify-between space-y-2">
-          <h2 className="text-3xl font-bold tracking-tight">Summary</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Statistics</h2>
           <div className="flex items-center space-x-2">
             <Link href="/dashboard" className={buttonVariants()}>
               <LucideLayoutDashboard className="mr-2" />
@@ -45,12 +49,12 @@ const StatisticsPage = async({params: {gameId}}: Props) => {
         </div>
 
         <div className="grid gap-4 mt-4 md:grid-cols-7">
-          {/* <ResultsCard accuracy={accuracy} />
-          <AccuracyCard accuracy={accuracy} />
-          <TimeTakenCard
+           <ResultsCard accuracy={8} />
+           <AccuracyCard accuracy={76} />
+           <TimeTakenCard
             timeEnded={new Date(game.timeEnded ?? 0)}
-            timeStarted={new Date(game.timeStarted ?? 0)} */}
-          {/* /> */}
+            timeStarted={new Date(game.timeStarted ?? 0)}
+          />
         </div>
         {/* <QuestionsList questions={game.questions} /> */}
       </div>
