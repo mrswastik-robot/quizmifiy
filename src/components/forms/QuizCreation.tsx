@@ -102,7 +102,7 @@ const QuizCreation = (props: Props) => {
 
 
   return (
-    <div className=' absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 '>
+    <div className=' absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:w-4/5 md:w-3/5 lg:w-2/5'>
         <Card>
 
             <CardHeader>
@@ -162,7 +162,7 @@ const QuizCreation = (props: Props) => {
 
                         <div className=' flex justify-between'>
 
-                            <Button className=' w-1/2 rounded-none rounded-l-lg'
+                            <Button className=' w-1/2 rounded-none rounded-l-lg p-1'
                             variant={
                                 form.getValues("type") === "mcq" ? "default" : "secondary"        //1:37
                               }
@@ -171,12 +171,12 @@ const QuizCreation = (props: Props) => {
                               }}
                               type="button"
                             >
-                                <CopyCheck className=' w-4 h-4 mr-2'/> Mutiple Choice Questions
+                                <CopyCheck className=' w-4 h-4 mr-2'/><span className=' text-xs md:text-sm'>MCQ</span> 
                             </Button>
 
                             <Separator orientation='vertical'/>
 
-                            <Button className=' w-1/2 rounded-none rounded-r-lg'
+                            <Button className=' w-1/2 rounded-none rounded-r-lg p-1'
                             variant={
                                 form.getValues("type") === "open_ended" ? "default" : "secondary"
                               }
@@ -185,7 +185,7 @@ const QuizCreation = (props: Props) => {
                               }}
                               type="button"
                             >
-                                <BookOpen className=' w-4 h-4 mr-2'/> Open Ended Questions
+                                <BookOpen className=' w-4 h-4 mr-2'/> <span className=' text-xs md:text-sm'>Open-Ended</span>
                             </Button>
                         </div>
 
