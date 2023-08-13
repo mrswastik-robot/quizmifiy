@@ -9,6 +9,7 @@ import {prisma} from '@/lib/db'
 import ResultsCard from '@/components/statistics/ResultCard'
 import AccuracyCard from '@/components/statistics/AccuracyCard'
 import TimeTakenCard from '@/components/statistics/TimeTakenCard'
+import QuestionsList from '@/components/statistics/QuestionList'
 
 import { LucideLayoutDashboard } from 'lucide-react'
 import { buttonVariants } from '@/components/ui/button'
@@ -23,16 +24,40 @@ const StatisticsPage = async({params: {gameId}}: Props) => {
 
     const session = await getAuthSession();
     if(!session?.user) {
-        redirect("/")
+        redirect("/");                           //statistic page is only accessible to logged in users , so therefore protected
     }
 
     const game = await prisma.game.findUnique({
         where: { id: gameId },
-        include: { questions: true },
+        include: { questions: true },                 //this is how we get the questions array , this "include" is joining the questions table with the game table , and we are getting the questions array from the game table
       });
       if (!game) {
         return redirect("/");
       }
+
+      let accuracy: number = 0;
+
+      if(game.gameType === 'mcq')
+      {
+        let totalCorrect = game.questions.reduce((acc, question) => {
+          if (question.answer === question.userAnswer) {
+            return acc + 1;
+          }
+          return acc;
+        }
+        , 0);
+        accuracy = (totalCorrect / game.questions.length) * 100;
+
+      }else if(game.gameType === 'open_ended')
+      {
+        let totalPercentage = game.questions.reduce((acc, question) => {
+          return acc + (question.percentageCorrect ?? 0);
+        }
+        , 0);
+        accuracy = (totalPercentage / game.questions.length);
+      }
+
+      accuracy = Math.round(accuracy * 100) / 100;
 
   return (
 
@@ -49,14 +74,14 @@ const StatisticsPage = async({params: {gameId}}: Props) => {
         </div>
 
         <div className="grid gap-4 mt-4 md:grid-cols-7">
-           <ResultsCard accuracy={8} />
-           <AccuracyCard accuracy={76} />
+           <ResultsCard accuracy={accuracy} />
+           <AccuracyCard accuracy={accuracy} />
            <TimeTakenCard
             timeEnded={new Date(game.timeEnded ?? 0)}
             timeStarted={new Date(game.timeStarted ?? 0)}
           />
         </div>
-        {/* <QuestionsList questions={game.questions} /> */}
+        <QuestionsList questions={game.questions} />
       </div>
     </>
   );
