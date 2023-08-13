@@ -102,8 +102,9 @@ const QuizCreation = (props: Props) => {
 
 
   return (
-    <div className=' absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:w-4/5 md:w-3/5 lg:w-2/5'>
-        <Card>
+    // <div className=' flex items-center justify-center my-[9%] overflow-y-hidden mx-auto sm:w-4/5 md:w-3/5 lg:w-full'>
+      <div className=' absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2'> 
+        <Card className=' shadow-lg w-[370px] lg:w-[600px]'>
 
             <CardHeader>
                 <CardTitle className="text-2xl font-bold">Quiz Creation</CardTitle>
