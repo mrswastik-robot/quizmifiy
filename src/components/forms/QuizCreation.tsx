@@ -28,6 +28,9 @@ import { useRouter } from 'next/navigation';
 
 import { BookOpen, CopyCheck } from 'lucide-react';
 
+import LoadingQuestions from '../LoadingQuestions';
+
+
 type Props = {}
 
 type Input = z.infer<typeof quizFormSchema>
@@ -35,6 +38,9 @@ type Input = z.infer<typeof quizFormSchema>
 const QuizCreation = (props: Props) => {
 
     const router = useRouter();
+
+    const [showLoader , setShowLoader] = React.useState(false);
+    const [finishedLoading, setFinishedLoading] = React.useState(false);
 
 
     const {mutate: getQuestions , isLoading}  = useMutation({                                             //2:18
@@ -62,22 +68,37 @@ const QuizCreation = (props: Props) => {
     function onSubmit(input: Input) {
         // alert(JSON.stringify(input ,null ,2))           //isse mast json format me print ho kr aa rha object with all inputs in the middle of the screen
 
+        setShowLoader(true);
+        
         getQuestions({
             topic: input.topic,
             amount: input.amount,
             type: input.type
         },{
             onSuccess: ({gameId}) => {
+
+                setFinishedLoading(true);          //ending the loading screen and then now I am moving this whole function inside timeout so that the loading screen stays for 1 sec and then the questions appear
+                setTimeout(() => {
                 if(form.getValues("type") == "open_ended") {
                     router.push(`/play/open-ended/${gameId}`)
                 }else{
                     router.push(`/play/mcq/${gameId}`)
                 }
+            }, 1000);
+
+            },
+            onError: () => {
+                setShowLoader(false);
             }
         })
     }
 
     form.watch();
+
+    if(showLoader)
+    {
+        return <LoadingQuestions finished={finishedLoading}/>
+    }
 
 
   return (
