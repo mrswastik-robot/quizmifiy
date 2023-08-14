@@ -32,7 +32,7 @@ export async function POST(req:Request, res:Response)
             }
         })
 
-        const {data} = await axios.post("http://localhost:3000/api/questions", {         //data here is an object which has an array consisting of many quesiton objects , output was seen in postman
+        const {data} = await axios.post(`${process.env.API_URL as string}/api/questions`, {         //data here is an object which has an array consisting of many quesiton objects , output was seen in postman
             amount: amount,
             topic: topic,
             type: type,
