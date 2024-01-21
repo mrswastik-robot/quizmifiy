@@ -37,6 +37,7 @@ export async function POST(req:Request, res:Response)
             topic: topic,
             type: type,
             });
+            console.log(data);
 
             if(type == 'mcq')
             {
@@ -108,7 +109,7 @@ export async function POST(req:Request, res:Response)
 
           return NextResponse.json(
             {
-                error: "Something went wrong."
+                error: "Something went wrong jii."
             },
             {
                 status: 500,
