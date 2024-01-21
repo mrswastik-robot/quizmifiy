@@ -1,34 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Quizmify - AI-Powered Quiz App
+![landingPage](https://github.com/mrswastik-robot/quizmifiy/assets/107865087/a041f051-b733-40e8-a8e3-c5dcc4758e38)
+
+Welcome to Quizmify, your ultimate destination for interactive quizzes on your favorite topics! Quizmify harnesses the power of AI to generate engaging quizzes tailored to your preferences. Whether you're a trivia enthusiast or simply curious about various subjects, Quizmify offers a personalized learning and entertainment experience.
+
+## Table of Contents
+
+- [About Quizmify](#about-quizmify)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+
+## About Quizmify
+
+Quizmify is a cutting-edge quiz application that leverages AI technology to provide dynamic quizzes based on your interests. You can customize the number and type of questions (Multiple Choice or Open-Ended) you want to tackle. After each quiz, Quizmify displays comprehensive statistics, including your answers, correct answers, accuracy, and time taken.
+
+Each user has access to their quiz history, allowing them to track their progress and performance over time. Quizmify empowers you to engage with learning and fun simultaneously, making education enjoyable and interactive.
+
+## Features
+
+- AI-generated quizzes on a wide range of topics.
+- Customizable quiz parameters: choose question type and quantity.
+- Detailed post-quiz statistics, including accuracy and time taken.
+- Personal quiz history to track your progress.
+- User-friendly interface designed with Shadcn and Tailwind CSS.
+
+## Tech Stack
+
+- Next.js 13 - The frontend framework for building fast and dynamic web applications.
+- MySQL - A powerful open-source relational database.
+- Prisma - An efficient ORM (Object-Relational Mapping) tool for database management.
+- next-auth - A simple authentication library for Next.js applications.
+- Tailwind CSS - A utility-first CSS framework for rapid UI development.
+- OpenAI API - Harnessing AI for generating quiz questions.
 
 ## Getting Started
 
-First, run the development server:
+To run Quizmify locally, follow these steps:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+1. Clone this repository: `git clone https://github.com/mrswastik-robot/quizmify.git`
+2. Navigate to the project directory: `cd quizmify`
+3. Install dependencies: `npm install`
+4. Set up environment variables:
+   - Rename `.env.example` to `.env` and add your API keys and configuration.
+5. Run the application: `npm run dev`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+For detailed instructions, refer to the [Getting Started Guide](link-to-your-detailed-getting-started-doc.md).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+1. Visit the Quizmify website.
+2. Log in using your credentials or sign up for a new account.
+3. Choose your favorite topic and customize quiz parameters.
+4. Start the quiz and answer the questions.
+5. Review your post-quiz statistics and quiz history.
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+We welcome contributions from the community! If you'd like to contribute to Quizmify.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This project is licensed under the [MIT License](link-to-license.md).
